@@ -6,11 +6,11 @@
 
 
 def palindrome?(str)
-  # YOUR CODE HERE
+	!!(str.casecmp str.reverse)
 end
 
 def count_words(str)
-  # YOUR CODE HERE
+	str.split(' ').length
 end
 
 
