@@ -2,8 +2,8 @@ class WrongNumberOfPlayersError < StandardError ; end
 class NoSuchStrategyError < StandardError ; end
 
 def rps_game_winner(game)
-  raise WrongNumberOfPlayersError unless game.length == 2
   hash = Hash[*game.flatten()]
+  raise WrongNumberOfPlayersError unless (game.length && hash.size) == 2 
   strat_check(hash)
   win = comp_to(hash)
   puts "#{win}"
@@ -13,7 +13,7 @@ def rps_tournament_winner(tournament)
   raise WrongNumberOfPlayersError unless tournament.length % 2 === 0 
   hash = Hash[*tournament.flatten()]
   strat_check(hash)
-  win = bracket(tournament)
+  win = bracket(hash)
   puts "#{win}"
 end
 
@@ -30,15 +30,20 @@ def comp_to(hash)
   end
 end
 
-def bracket(arr)
-  return arr unless hash.instance_of?(Array)
-  i = 0
-  splicer = arr.each_slice(arr.size/2)
-  splicer.each do |entry|
-    next_round[i] = comp_to(Hash[*entry])
-  end
+def bracket(hash)
+  return hash unless hash.instance_of?(Hash)
+  h_len = hash.length
+  next_round = Array.new
+  arr = Array.new
+  for x in 0..h_len
+    arr.push(hash.entries[x])
+    if (x % 2 === 1)
+      next_round.push(comp_to(Hash[*arr.flatten()]))
+      arr.clear
+    end
+  end 
   if (next_round.size != 1)
-    bracket(next_round)
+    bracket(Hash[*next_round.flatten()])
   else
     return next_round
   end
@@ -48,12 +53,5 @@ def strat_check(hash)
   return hash unless hash.instance_of?(Hash)
   hash.each do |key, val|
     raise NoSuchStrategyError unless (val =~ /[RSP]/i)
-  end
-end
-
-def to_hash(arr)
-  return arr unless arr.instance_of?(Array)
-  arr.inject({}) do |hash, (key, value)|
-  	hash.merge!(key.to_sym => to_hash(value))
   end
 end
