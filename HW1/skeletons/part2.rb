@@ -1,22 +1,42 @@
 class WrongNumberOfPlayersError < StandardError ; end
 class NoSuchStrategyError < StandardError ; end
 
+# Determines the winner in a two player game of 
+# "Rock, Paper, Scissors". Does so by converting
+# the array passed into a hash that is then sent 
+# to a method to have its values compared to 
+# determine a winner.
+#
+# @game Array stores the players and their strategy
 def rps_game_winner(game)
   hash = Hash[*game.flatten()]
   raise WrongNumberOfPlayersError unless (game.length && hash.size) == 2 
   strat_check(hash)
-  win = comp_to(hash)
-  puts "#{win}"
+  winner = comp_to(hash)
+  puts "#{winner}"
 end
 
+# Determines the winner in a 2^n number of players  
+# game of "Rock, Paper, Scissors". Does so by converting
+# the array passed into a hash that is then sent to a
+# recursive method to have its entries compared for
+# a winner using a bracket style tournament.
+#
+# @tournament Array stores the players and their strategy
 def rps_tournament_winner(tournament) 
-  raise WrongNumberOfPlayersError unless tournament.length % 2 === 0 
+  raise WrongNumberOfPlayersError unless (tournament.length % 2 === 0) && (tournament.length != 0) 
   hash = Hash[*tournament.flatten()]
   strat_check(hash)
-  win = bracket(hash)
-  puts "#{win}"
+  winner = bracket(hash)
+  puts "#{winner}"
 end
 
+# Compares a hash with two players and their strategies
+# for the RPS game. The winner is returned to the caller
+# as an array
+#
+# @hash Hash holds player=>key, strategy=>value pairs
+# return Array holds the winner in array format
 def comp_to(hash)
   return hash unless hash.instance_of?(Hash)
   if (hash.values[0] == hash.values[1])
@@ -30,6 +50,15 @@ def comp_to(hash)
   end
 end
 
+# Recursive method that takes a hash of all the players
+# and their strategies. It then plays 1v1 until all the
+# values have been iterated over. It creates an array
+# of winners that are passed to a recursive call until
+# there is only one. The winner is then returned as
+# an array
+#
+# @hash Hash holds player=>key, strategy=>value pairs
+# return Array holds the winner in array format
 def bracket(hash)
   return hash unless hash.instance_of?(Hash)
   h_len = hash.length
@@ -49,6 +78,10 @@ def bracket(hash)
   end
 end
 
+# Checks that the player used either Rock, Paper,
+# or Scissor and not Death Ray, Atom Bomb, etc.
+#
+# @hash Hash holds player=>key, strategy=>value pairs
 def strat_check(hash)
   return hash unless hash.instance_of?(Hash)
   hash.each do |key, val|
