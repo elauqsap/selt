@@ -5,7 +5,7 @@ class Dessert
   end
   
   def healthy?
-    !!(@calories <= 200)
+    !!(@calories < 200)
   end
   
   def delicious?
