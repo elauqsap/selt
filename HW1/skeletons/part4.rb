@@ -1,3 +1,7 @@
+# Metaprogramming example to add history to 
+# attr accessor. Stores all the values the
+# accessor has been set to in an array. A
+# reader allows the user to view the history.
 class Class
 
   def attr_accessor_with_history(attr_name)
