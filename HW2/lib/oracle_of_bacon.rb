@@ -20,13 +20,15 @@ class OracleOfBacon
   validate :from_does_not_equal_to
 
   def from_does_not_equal_to
- #   if @from == @to
- #     self.errors.add(:from, 'cannot be the same as To')
- #  end
+    if @from == @to
+      self.errors.add(:from, 'cannot be the same as To')
+   end
   end
 
   def initialize(api_key='')
-    # YOUR CODE HERE
+    @api_key = api_key
+    @to = "Kevin Bacon"
+    @from = "Kevin Bacon"
   end
 
   def find_connections
@@ -47,6 +49,10 @@ class OracleOfBacon
   def make_uri_from_arguments
     # YOUR CODE HERE: SET @uri ATTRIBUTE TO PROPERLY-ESCAPED URI
     # CONSTRUCTED FROM THE @from, @to, @api_key ARGUMENTS
+    @api = CGI.escape(@api_key)
+    @a = CGI.escape(@to)
+    @b = CGI.escape(@from)
+    @uri = "http://oracleofbacon.org/cgi-bin/xml?p=#{@api}&a=#{@a}&b=#{@b}"
   end
       
   class Response
@@ -64,9 +70,10 @@ class OracleOfBacon
         parse_error_response
       elsif ! @doc.xpath('/spellcheck').empty?
         parse_spellcheck_response
-      # YOUR CODE HERE: 'elsif' AND?OR 'else' CLAUSES TO HANDLE OTHER RESPONSES.
-      # FOR RESPONSES NOT MATCHING THE 3 BASIC TYPES, THE RESPONSE OBJECT
-      # SHOULD HAVE TYPE :unknown AND DATA 'unknown response' 
+      elsif ! @doc.xpath('/link').empty?
+        parse_graph_response
+      else
+        parse_unknown_response
       end        
     end
 
@@ -74,10 +81,22 @@ class OracleOfBacon
       @type = :error
       @data = 'Unauthorized access'
     end
+
     def parse_spellcheck_response
       @type = :spellcheck
       @data = @doc.xpath('//match').map(&:text)
-      #Note: map(&:text) is same as map{|n| n.text}
+    end
+
+    def parse_graph_response
+      @type = :graph
+      @actor = @doc.xpath('//actor').map(&:text)
+      @movie = @doc.xpath('//movie').map(&:text)
+      @data = @actor.zip(@movie).flatten.compact
+    end
+
+    def parse_unknown_response
+      @type=:unknown
+      @data="unknown response"
     end
   end
 end

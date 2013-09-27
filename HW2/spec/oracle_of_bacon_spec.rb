@@ -5,7 +5,7 @@ require 'debugger'
 describe 'OracleOfBacon' do
   before(:all) { FakeWeb.allow_net_connect = false }
   describe 'instance' do
-    pending "competion of part 1 of the assignment" do
+  #  pending "competion of part 1 of the assignment" do
       before(:each) { @orb = OracleOfBacon.new('fake_api_key') }
       describe 'when new' do
         subject { @orb }
@@ -35,7 +35,7 @@ describe 'OracleOfBacon' do
           it { should_not be_valid }
         end
       end
-    end #of pending for part 1
+   # end #of pending for part 1
   end
   describe 'parsing XML response' do
     pending "completion of part 2 of the assignment" do
